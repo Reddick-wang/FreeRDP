@@ -649,7 +649,7 @@ int transport_read_pdu(rdpTransport* transport, wStream* s)
 	int pduLength;
 	BYTE* header;
 	pduLength = 0;
-
+	BOOL isFASTPath = FALSE;
 	if (!transport)
 		return -1;
 
@@ -741,6 +741,7 @@ int transport_read_pdu(rdpTransport* transport, wStream* s)
 		}
 		else
 		{
+			isFASTPath = TRUE;
 			/* Fast-Path Header */
 			if (header[1] & 0x80)
 			{
@@ -769,15 +770,27 @@ int transport_read_pdu(rdpTransport* transport, wStream* s)
 
 	if (!Stream_EnsureCapacity(s, Stream_GetPosition(s) + pduLength))
 		return -1;
-
+	//printf("recieve pdu lenth: %d \n", pduLength);
 	status = transport_read_layer_bytes(transport, s, pduLength - Stream_GetPosition(s));
 
 	if (status != 1)
 		return status;
-
-	if (Stream_GetPosition(s) >= pduLength)
+	/* ²âÊÔpcapÂ¼ÖÆ
+	if (Stream_GetPosition(s) >= pduLength && isFASTPath) {
+		if (transport->pcap == NULL)
+		{
+			transport->pcap = pcap_open("d:\\3.pcap", true);
+		}
+		printf("saved pdulength : %d \n", pduLength);
+		pcap_add_record(transport->pcap, Stream_Buffer(s), pduLength);
+		pcap_flush(transport->pcap);
+	}
+	*/
+	/*
+	if (Stream_GetPosition(s) >= pduLength && isFASTPath)
 		WLog_Packet(transport->log, WLOG_TRACE, Stream_Buffer(s), pduLength,
-		            WLOG_PACKET_INBOUND);
+			WLOG_PACKET_INBOUND);
+	*/
 
 	Stream_SealLength(s);
 	Stream_SetPosition(s, 0);

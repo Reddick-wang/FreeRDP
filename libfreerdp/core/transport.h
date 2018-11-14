@@ -79,6 +79,7 @@ struct rdp_transport
 	HANDLE rereadEvent;
 	BOOL haveMoreBytesToRead;
 	wLog* log;
+	rdpPcap *pcap;
 };
 
 FREERDP_LOCAL wStream* transport_send_stream_init(rdpTransport* transport,

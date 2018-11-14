@@ -1327,7 +1327,67 @@ static int rdp_recv_fastpath_pdu(rdpRdp* rdp, wStream* s)
 	UINT16 length;
 	rdpFastPath* fastpath;
 	fastpath = rdp->fastpath;
+	if (rdp->instance->settings->PlayRemoteFx)
+	{
+		wStream* s1;
+		rdpUpdate* update = rdp->instance->update;
+		pcap_record record;
 
+		if (!update->pcap_rfx)
+			update->pcap_rfx = pcap_open(rdp->settings->PlayRemoteFxFile, FALSE);
+		update->play_rfx = TRUE;
+
+		
+		if (pcap_has_next_record(update->pcap_rfx))
+		{
+			pcap_get_next_record_header(update->pcap_rfx, &record);
+
+			if (!(s1 = StreamPool_Take(rdp->transport->ReceivePool, record.length))) return -1;
+
+			record.data = Stream_Buffer(s1);
+			pcap_get_next_record_content(update->pcap_rfx, &record);
+			Stream_SetLength(s1, record.length);
+			Stream_SetPosition(s1, 0);
+			if (!fastpath_read_header_rdp(fastpath, s1, &length))
+			{
+				WLog_ERR(TAG, "rdp_recv_fastpath_pdu: fastpath_read_header_rdp() fail");
+				return -1;
+			}
+
+			if ((length == 0) || (length > Stream_GetRemainingLength(s1)))
+			{
+				WLog_ERR(TAG, "incorrect FastPath PDU header length %"PRIu16"", length);
+				return -1;
+			}
+
+			if (rdp->autodetect->bandwidthMeasureStarted)
+			{
+				rdp->autodetect->bandwidthMeasureByteCount += length;
+			}
+
+			if (fastpath->encryptionFlags & FASTPATH_OUTPUT_ENCRYPTED)
+			{
+				UINT16 flags = (fastpath->encryptionFlags & FASTPATH_OUTPUT_SECURE_CHECKSUM) ? SEC_SECURE_CHECKSUM :
+					0;
+
+				if (!rdp_decrypt(rdp, s1, length, flags))
+				{
+					WLog_ERR(TAG, "rdp_recv_fastpath_pdu: rdp_decrypt() fail");
+					return -1;
+				}
+			}
+
+			int rv = fastpath_recv_updates(rdp->fastpath, s1);
+			Stream_Release(s1);
+			return rv;
+		}
+		else
+		{
+			pcap_close(update->pcap_rfx);
+			update->pcap_rfx = NULL;
+		}
+		return -1;
+	}
 	if (!fastpath_read_header_rdp(fastpath, s, &length))
 	{
 		WLog_ERR(TAG, "rdp_recv_fastpath_pdu: fastpath_read_header_rdp() fail");

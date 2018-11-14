@@ -231,7 +231,7 @@ wPcap* Pcap_Open(char* name, BOOL write)
 		if (!Pcap_Read_Header(pcap, &pcap->header))
 			goto out_fail;
 	}
-
+	printf("fp position %d \n", ftell(pcap_fp));
 	return pcap;
 
 out_fail:
@@ -476,9 +476,9 @@ BOOL WLog_PacketMessage_Write(wPcap* pcap, void* data, DWORD length, DWORD flags
 	record.header.ts_sec = tp.tv_sec;
 	record.header.ts_usec = tp.tv_usec;
 	if (!Pcap_Write_RecordHeader(pcap, &record.header) ||
-		!WLog_PacketMessage_Write_EthernetHeader(pcap, &ethernet) ||
-		!WLog_PacketMessage_Write_IPv4Header(pcap, &ipv4) ||
-		!WLog_PacketMessage_Write_TcpHeader(pcap, &tcp) ||
+		//!WLog_PacketMessage_Write_EthernetHeader(pcap, &ethernet) ||
+		//!WLog_PacketMessage_Write_IPv4Header(pcap, &ipv4) ||
+		//!WLog_PacketMessage_Write_TcpHeader(pcap, &tcp) ||
 		!Pcap_Write_RecordContent(pcap, &record))
 		return FALSE;
 	fflush(pcap->fp);
