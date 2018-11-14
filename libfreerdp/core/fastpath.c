@@ -380,7 +380,7 @@ static int fastpath_recv_update(rdpFastPath* fastpath, BYTE updateCode, wStream*
 	pointer = update->pointer;
 #ifdef WITH_DEBUG_RDP
 	DEBUG_RDP("recv Fast-Path %s Update (0x%02"PRIX8"), length:%"PRIu32"",
-	          fastpath_update_to_string(updateCode), updateCode, size);
+	          fastpath_update_to_string(updateCode), updateCode, s->length);
 #endif
 
 	switch (updateCode)

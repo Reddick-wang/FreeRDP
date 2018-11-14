@@ -203,7 +203,7 @@ static BOOL wf_pre_connect(freerdp* instance)
 	settings->OrderSupport[NEG_MULTIOPAQUERECT_INDEX] = TRUE;
 	settings->OrderSupport[NEG_MULTI_DRAWNINEGRID_INDEX] = FALSE;
 	settings->OrderSupport[NEG_LINETO_INDEX] = TRUE;
-	settings->OrderSupport[NEG_POLYLINE_INDEX] = TRUE;
+	settings->OrderSupport[NEG_POLYLINE_INDEX] = FALSE;
 	settings->OrderSupport[NEG_MEMBLT_INDEX] = settings->BitmapCacheEnabled;
 	settings->OrderSupport[NEG_MEM3BLT_INDEX] = settings->BitmapCacheEnabled;
 	settings->OrderSupport[NEG_MEMBLT_V2_INDEX] = settings->BitmapCacheEnabled;
@@ -212,7 +212,7 @@ static BOOL wf_pre_connect(freerdp* instance)
 	settings->OrderSupport[NEG_GLYPH_INDEX_INDEX] = TRUE;
 	settings->OrderSupport[NEG_FAST_INDEX_INDEX] = TRUE;
 	settings->OrderSupport[NEG_FAST_GLYPH_INDEX] = TRUE;
-	settings->OrderSupport[NEG_POLYGON_SC_INDEX] = TRUE;
+	settings->OrderSupport[NEG_POLYGON_SC_INDEX] = FALSE;
 	settings->OrderSupport[NEG_POLYGON_CB_INDEX] = TRUE;
 	settings->OrderSupport[NEG_ELLIPSE_SC_INDEX] = FALSE;
 	settings->OrderSupport[NEG_ELLIPSE_CB_INDEX] = FALSE;
@@ -302,6 +302,9 @@ static void wf_add_system_menu(wfContext* wfc)
 	}
 }
 
+/*
+	update settings
+*/
 static BOOL wf_post_connect(freerdp* instance)
 {
 	rdpGdi* gdi;
@@ -972,11 +975,11 @@ static int wfreerdp_client_start(rdpContext* context)
 	wfc->wndClass.hIcon = wfc->icon;
 	wfc->wndClass.hIconSm = wfc->icon;
 	RegisterClassEx(&(wfc->wndClass));
-	wfc->keyboardThread = CreateThread(NULL, 0, wf_keyboard_thread, (void*) wfc, 0,
-	                                   &wfc->keyboardThreadId);
+	/*wfc->keyboardThread = CreateThread(NULL, 0, wf_keyboard_thread, (void*)wfc, 0,
+		&wfc->keyboardThreadId);
 
 	if (!wfc->keyboardThread)
-		return -1;
+		return -1;*/
 
 	wfc->thread = CreateThread(NULL, 0, wf_client_thread, (void*) instance, 0,
 	                           &wfc->mainThreadId);
