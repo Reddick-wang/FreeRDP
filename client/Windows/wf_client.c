@@ -975,11 +975,15 @@ static int wfreerdp_client_start(rdpContext* context)
 	wfc->wndClass.hIcon = wfc->icon;
 	wfc->wndClass.hIconSm = wfc->icon;
 	RegisterClassEx(&(wfc->wndClass));
-	/*wfc->keyboardThread = CreateThread(NULL, 0, wf_keyboard_thread, (void*)wfc, 0,
+	if (!instance->settings->PlayRemoteFx)
+	{
+		wfc->keyboardThread = CreateThread(NULL, 0, wf_keyboard_thread, (void*)wfc, 0,
 		&wfc->keyboardThreadId);
 
-	if (!wfc->keyboardThread)
-		return -1;*/
+		if (!wfc->keyboardThread)
+		return -1;
+	}
+	
 
 	wfc->thread = CreateThread(NULL, 0, wf_client_thread, (void*) instance, 0,
 	                           &wfc->mainThreadId);
