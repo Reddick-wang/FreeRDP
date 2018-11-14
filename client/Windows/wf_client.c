@@ -213,7 +213,7 @@ static BOOL wf_pre_connect(freerdp* instance)
 	settings->OrderSupport[NEG_FAST_INDEX_INDEX] = TRUE;
 	settings->OrderSupport[NEG_FAST_GLYPH_INDEX] = TRUE;
 	settings->OrderSupport[NEG_POLYGON_SC_INDEX] = FALSE;
-	settings->OrderSupport[NEG_POLYGON_CB_INDEX] = TRUE;
+	settings->OrderSupport[NEG_POLYGON_CB_INDEX] = FALSE;
 	settings->OrderSupport[NEG_ELLIPSE_SC_INDEX] = FALSE;
 	settings->OrderSupport[NEG_ELLIPSE_CB_INDEX] = FALSE;
 	wfc->fullscreen = settings->Fullscreen;
