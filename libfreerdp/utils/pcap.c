@@ -208,7 +208,7 @@ rdpPcap* pcap_open(char* name, BOOL write)
 		if (!pcap_read_header(pcap, &pcap->header))
 			goto fail;
 	}
-
+	printf("pcap fp postion :%d  \n ", ftell(pcap_fp));
 	return pcap;
 
 fail:
